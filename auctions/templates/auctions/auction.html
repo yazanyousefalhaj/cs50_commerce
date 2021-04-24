@@ -1,0 +1,37 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2>Active Listings</h2>
+
+<img src="{{auction.image}}" alt="Auction image" height="100px" width="100px">
+<p>{{auction.title}} - {{auction.description}} - {{auction.highest_bid_value}} </p>
+
+<form action="{{ form_action }}" method="POST">
+  {% csrf_token %}
+
+  {% if is_in_watchlist %}
+  <input type="submit" value="Remove from watchlist">
+  {% else %}
+  <input type="submit" value="Add to watchlist">
+  {% endif %}
+</form>
+
+{% if can_close_auction %}
+<form action="{% url 'close_auction' auction.id %}" method="POST">
+  {% csrf_token %}
+  <input type="submit" value="Close auction">
+</form>
+{% endif %}
+
+<form action="{% url 'create_bid' auction.id %}" method="post">
+  {% csrf_token %}
+  {{ bid_form }}
+  <input type="submit" value="Bid">
+</form>
+
+{% if errors %}
+<ul>
+  {{ errors }}
+</ul>
+{% endif %}
+{% endblock %}
