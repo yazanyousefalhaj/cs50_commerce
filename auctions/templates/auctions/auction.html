@@ -44,6 +44,10 @@
     </div>
   </div>
   <a href="{% url 'edit_auction' auction.id %}">Edit</a>
+
+  {% if is_winner %}
+  <p>You won this auction</p>
+  {% endif %}
 </div>
 
 <div class="card container mt-4 p-2">

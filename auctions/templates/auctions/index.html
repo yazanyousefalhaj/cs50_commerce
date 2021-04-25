@@ -3,6 +3,7 @@
 {% block body %}
 <div class="container mt-2">
     <ul class="row list-unstyled">
+        {% if auctions %}
         {% for auction in auctions %}
         <li class="col-4">
             <div class="card auction-card d-flex flex-column justify-content-center align-items-center overflow-hidden">
@@ -26,6 +27,9 @@
             </div>
         </li>
         {% endfor %}
+        {% else %}
+        <p>List is empty</p>
+        {% endif %}
     </ul>
 </div>
 {% endblock %}

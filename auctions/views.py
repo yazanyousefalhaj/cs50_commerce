@@ -142,6 +142,7 @@ def auction_index(request, auction_id):
             ),
             "comment_form": NewCommentFrom(action=reverse("create_comment", kwargs={"auction_id": auction.id})),
             "comments": auction.comments.all(),
+            "is_winner": auction.winner == request.user,
         },
     )
 
