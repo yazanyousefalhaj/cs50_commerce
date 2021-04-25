@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.core import validators
 from django.db import models
+from django.core.validators import MinValueValidator
+from decimal import Decimal
 
 
 class User(AbstractUser):
@@ -19,7 +21,7 @@ class Auction(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField()
-    starting_bid = models.DecimalField(decimal_places=2, max_digits=20)
+    starting_bid = models.DecimalField(decimal_places=2, max_digits=20, validators=[MinValueValidator(Decimal("0.01"))])
     image = models.URLField(null=True)
     categories = models.ManyToManyField(Category, related_name="auctions")
     is_active = models.BooleanField(default=True)

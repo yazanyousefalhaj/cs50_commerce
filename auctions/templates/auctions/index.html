@@ -19,7 +19,7 @@
                 {% endif %}
 
                 <h5 class="card-title">{{auction.title}}</h5>
-                <p class="card-text">{{auction.description}}</p>
+                <p class="card-text px-2">{{auction.description}}</p>
                 <a href="{% url 'auction_index' auction.id %}" class="btn btn-primary">
                     Bid {{auction.highest_bid_value}}
                 </a>
