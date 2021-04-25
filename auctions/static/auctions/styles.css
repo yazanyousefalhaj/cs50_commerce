@@ -3,3 +3,30 @@ body {
     margin: 0px;
     box-sizing: border-box;
 }
+
+.auction-card {
+    height: 400px;
+}
+
+.auction-card img {
+    height: 250px;
+    width: auto;
+}
+
+.auction-card .card-title {
+    max-height: 20px;
+}
+
+.auction-card .card-text {
+    max-height: 80px;
+}
+
+.auction-card a {
+    max-height: 50px;
+}
+
+
+.auction-image {
+    height: 500px;
+    width: auto;
+}

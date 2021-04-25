@@ -11,37 +11,47 @@
 </head>
 
 <body>
-    <h1>Auctions</h1>
-    <div>
-        {% if user.is_authenticated %}
-        Signed in as <strong>{{ user.username }}</strong>.
-        {% else %}
-        Not signed in.
-        {% endif %}
-    </div>
-    <ul class="nav">
-        {% if user.is_authenticated %}
+    <nav class="navbar  navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/">Auctions</a>
+
+        <ul class="navbar-nav mr-auto">
+            {% if user.is_authenticated %}
             <li class=nav-item>
                 <a class="nav-link" href="{% url 'create_auction' %}">Create Auction</a>
             </li>
-        {% endif %}
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
-        </li>
-        {% if user.is_authenticated %}
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-        </li>
-        {% else %}
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Log In</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'register' %}">Register</a>
-        </li>
-        {% endif %}
-    </ul>
-    <hr>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'categories' %}">Categories</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'login' %}">Log In</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'register' %}">Register</a>
+            </li>
+            {% endif %}
+        </ul>
+
+        <span class="navbar-text ml-auto">
+            {% if user.is_authenticated %}
+            Signed in as <strong>{{ user.username }}</strong>.
+            {% else %}
+            Not signed in.
+            {% endif %}
+        </span>
+
+    </nav>
     {% block body %}
     {% endblock %}
 </body>

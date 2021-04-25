@@ -1,37 +1,64 @@
 {% extends "auctions/layout.html" %}
+{% load crispy_forms_tags %}
 
 {% block body %}
-<h2>Active Listings</h2>
+<div class="card container mt-2 p-2">
+  <div class="row justify-content-center">
+    <div class="col">
+      <img class="auction-image" src="{{auction.image}}" alt="Auction image">
+    </div>
+  </div>
 
-<img src="{{auction.image}}" alt="Auction image" height="100px" width="100px">
-<p>{{auction.title}} - {{auction.description}} - {{auction.highest_bid_value}} </p>
+  <div class="row d-flex justify-content-center">
+    <div class="col-auto">
+      <p>{{auction.title}} - {{auction.description}} - {{auction.highest_bid_value}} </p>
+    </div>
+  </div>
 
-<form action="{{ form_action }}" method="POST">
-  {% csrf_token %}
 
-  {% if is_in_watchlist %}
-  <input type="submit" value="Remove from watchlist">
-  {% else %}
-  <input type="submit" value="Add to watchlist">
-  {% endif %}
-</form>
+  <div class="row">
+    <div class="col-6">
+      <form action="{{ form_action }}" method="POST">
+        {% csrf_token %}
 
-{% if can_close_auction %}
-<form action="{% url 'close_auction' auction.id %}" method="POST">
-  {% csrf_token %}
-  <input type="submit" value="Close auction">
-</form>
-{% endif %}
+        {% if is_in_watchlist %}
+        <input type="submit" value="Remove from watchlist">
+        {% else %}
+        <input type="submit" value="Add to watchlist">
+        {% endif %}
+      </form>
+    </div>
+    <div class="col-6">
+      {% if can_close_auction %}
+      <form action="{% url 'close_auction' auction.id %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Close auction">
+      </form>
+      {% endif %}
+    </div>
+  </div>
 
-<form action="{% url 'create_bid' auction.id %}" method="post">
-  {% csrf_token %}
-  {{ bid_form }}
-  <input type="submit" value="Bid">
-</form>
+  <div class="row">
+    <div class="col">
+      {% crispy bid_form %}
+    </div>
+  </div>
+  <a href="{% url 'edit_auction' auction.id %}">Edit</a>
+</div>
 
-{% if errors %}
-<ul>
-  {{ errors }}
-</ul>
-{% endif %}
+<div class="card container mt-4 p-2">
+  {% for comment in comments %}
+  <div class="row">
+    <div class="col">
+      <p>{{comment.author}}: {{comment.content}}</p>
+    </div>
+  </div>
+  {% endfor %}
+
+  <div class="row">
+    <div class="col">
+      {% crispy comment_form %}
+    </div>
+  </div>
+</div>
 {% endblock %}

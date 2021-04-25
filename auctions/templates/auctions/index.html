@@ -1,15 +1,31 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<h2>Active Listings</h2>
+<div class="container mt-2">
+    <ul class="row list-unstyled">
+        {% for auction in auctions %}
+        <li class="col-4">
+            <div class="card auction-card d-flex flex-column justify-content-center align-items-center overflow-hidden">
+                {% if auction.image %}
+                <div style="background-color: gray;">
+                    <img class="card-img-top" src="{{ auction.image }}" alt="Image for {{auction.title}}">
+                </div>
+                {% else %}
+                <div style="background-color: gray;">
+                    <img class="card-img-top"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/480px-No_image_available.svg.png"
+                        alt="No image available for this auciton">
+                </div>
+                {% endif %}
 
-<ul>
-    {% for auction in auctions %}
-    <li>
-        <a href="{% url 'auction_index' auction.id %}">
-            {{auction.title}} - {{auction.description}} - {{auction.highest_bid_value}}
-        </a>
-    </li>
-    {% endfor %}
-</ul>
+                <h5 class="card-title">{{auction.title}}</h5>
+                <p class="card-text">{{auction.description}}</p>
+                <a href="{% url 'auction_index' auction.id %}" class="btn btn-primary">
+                    Bid {{auction.highest_bid_value}}
+                </a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}

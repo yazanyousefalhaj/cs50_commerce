@@ -57,3 +57,8 @@ class Bid(models.Model):
     def __str__(self) -> str:
         return f"{self.bidder} bid {self.value} on [{self.auction}]"
 
+
+class Comment(models.Model):
+    content = models.TextField()
+    author = models.ForeignKey(User, related_name="comments", on_delete=models.CASCADE)
+    auction = models.ForeignKey(Auction, related_name="comments", on_delete=models.CASCADE)
