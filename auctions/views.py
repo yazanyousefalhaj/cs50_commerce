@@ -6,6 +6,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.contrib import messages
 
 from .models import Auction, Bid, Category, Comment, User
 
@@ -86,7 +87,7 @@ def create_auction(request):
             form.save()
             return redirect(reverse("index"))
         else:
-            print(form.errors)
+            messages.error(request, form.errors)
     else:
         form = NewAuctionForm(action="create_auction")
 
@@ -123,11 +124,13 @@ def edit_auction(request, auction_id):
     )
 
 
-@login_required
 def auction_index(request, auction_id):
     auction = get_object_or_404(Auction, pk=auction_id)
-    is_in_watchlist = auction in request.user.watchlist.all()
+    is_in_watchlist = (
+        request.user.is_authenticated and auction in request.user.watchlist.all()
+    )
     form_action = "remove_from_watchlist" if is_in_watchlist else "add_to_watchlist"
+    storage = messages.get_messages(request)
     return render(
         request,
         "auctions/auction.html",
@@ -135,12 +138,17 @@ def auction_index(request, auction_id):
             "auction": auction,
             "is_in_watchlist": is_in_watchlist,
             "form_action": reverse(form_action, kwargs={"auction_id": auction_id}),
-            "can_close_auction": request.user == auction.owner,
+            "can_close_auction": request.user.is_authenticated
+            and request.user == auction.owner,
+            "can_bid": request.user.is_authenticated and request.user != auction.owner,
             "bid_form": NewBidForm(
                 bid_price=auction.highest_bid_value,
                 action=reverse("create_bid", kwargs={"auction_id": auction.id}),
+                invalid_style=bool(storage),
             ),
-            "comment_form": NewCommentFrom(action=reverse("create_comment", kwargs={"auction_id": auction.id})),
+            "comment_form": NewCommentFrom(
+                action=reverse("create_comment", kwargs={"auction_id": auction.id})
+            ),
             "comments": auction.comments.all(),
             "is_winner": auction.winner == request.user,
         },
@@ -152,7 +160,7 @@ def watchlist(request):
     return render(
         request,
         "auctions/index.html",
-        {"auctions": request.user.watchlist.filter(is_closed=False)},
+        {"auctions": request.user.watchlist.filter()},
     )
 
 
@@ -201,7 +209,8 @@ def create_bid(request, auction_id):
             bid_form.save()
             return redirect(reverse("auction_index", kwargs={"auction_id": auction_id}))
         else:
-            print(bid_form.errors)
+            for error in bid_form.errors["value"]:
+                messages.error(request, error)
             return redirect(
                 reverse(
                     "auction_index",
@@ -257,4 +266,3 @@ def category_auctions(request, category_id):
             )
         },
     )
-

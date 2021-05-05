@@ -1,15 +1,24 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<h2>Categories</h2>
 
-<ul>
-    {% for category in categories %}
-    <li>
-        <a href="{% url 'category_auctions' category.id %}">
-            {{category.name}}
-        </a>
-    </li>
-    {% endfor %}
-</ul>
+<div class="container">
+
+    <div class="d-flex justify-content-center">
+        <div class="card categories-card">
+            <div class="card-header">
+                Categories
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for category in categories %}
+                <li class="list-group-item">
+                    <a href="{% url 'category_auctions' category.id %}">
+                        {{category.name}}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
 {% endblock %}

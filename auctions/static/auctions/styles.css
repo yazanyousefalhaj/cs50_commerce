@@ -28,6 +28,19 @@ body {
 
 
 .auction-image {
-    height: 500px;
-    width: auto;
+    height: auto;
+    width: 250px;
+    flex-grow: 0;
+}
+
+.auction-card-content {
+    flex-grow: 6;
+}
+
+.categories-card {
+    width: 500px;
+}
+
+.asteriskField {
+    display: none;
 }

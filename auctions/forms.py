@@ -1,10 +1,11 @@
-from crispy_forms.layout import Layout, Submit
 from django.core.exceptions import ValidationError
 from django.db.utils import ProgrammingError
-from django.forms import ModelForm, fields, widgets
+from django.forms import ModelForm
+from django.utils.translation import gettext as _
 
+from crispy_forms.layout import Field, Layout, Submit
 from crispy_forms.helper import FormHelper
-from crispy_forms.bootstrap import StrictButton
+from crispy_forms.bootstrap import StrictButton, FieldWithButtons
 
 from .models import Auction, Bid, Comment
 
@@ -36,31 +37,32 @@ class NewBidForm(ModelForm):
     def __init__(self, *args, **kwargs):
         bid_price = kwargs.pop("bid_price", None)
         action = kwargs.pop("action", None)
+        invalid_style = kwargs.pop("invalid_style", None)
         super().__init__(*args, **kwargs)
-        # self.fields["value"].attrs.update({"placeholder": bid_price})
         self.helper = FormHelper()
         self.helper.form_id = "id_new_bid_form"
         self.helper.form_action = action
         self.helper.form_method = "post"
         self.helper.form_class = "form-inline"
-        # self.helper.label_class = "col-4"
-        # self.helper.field_class = "col-8"
+        self.helper.label_class = "mr-2"
+        self.helper.form_show_labels = False
         self.helper.layout = Layout(
-            "value",
-            Submit("submit", "Bid", css_class="btn btn-primary"),
+            FieldWithButtons(
+                Field("value", placeholder=bid_price, css_class="is-invalid" if invalid_style else ""),
+                Submit("submit", "Bid",css_class="btn btn-primary"),
+            )   
         )
 
     
-    def clean(self):
-        print(self.instance)
+    def clean_value(self):
         if not self.instance:
             raise ProgrammingError("There is no instance with this form")
         if self.cleaned_data["value"] <= self.instance.auction.highest_bid_value:
-            raise ValidationError("Bid value is lower then the highest bid value")
+            raise ValidationError(_("Bid value is lower then the highest bid value"))
         if self.instance.bidder == self.instance.auction.owner:
-            raise ValidationError("You can't bid on your own auction")
+            raise ValidationError(_("You can't bid on your own auction"))
+        return self.cleaned_data["value"]
 
-        return super().clean()
 
 
 class NewCommentFrom(ModelForm):
@@ -68,13 +70,16 @@ class NewCommentFrom(ModelForm):
         model = Comment
         fields = ("content",)
 
+
     def __init__(self, *args, **kwargs):
         action = kwargs.pop("action", None)
         super().__init__(*args, **kwargs)
+        self.fields["content"].widget.attrs.update({"required": False, "placeholder": _("Leave a comment")})
         self.helper = FormHelper()
         self.helper.form_id = "id_new_comment_form"
         self.helper.form_action = action
         self.helper.form_method = "post"
+        self.helper.form_show_labels = False
 
         self.helper.layout = Layout(
             "content",

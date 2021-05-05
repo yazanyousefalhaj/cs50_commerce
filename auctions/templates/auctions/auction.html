@@ -2,64 +2,75 @@
 {% load crispy_forms_tags %}
 
 {% block body %}
-<div class="card container mt-2 p-2">
-  <div class="row justify-content-center">
-    <div class="col">
-      <img class="auction-image" src="{{auction.image}}" alt="Auction image">
+<div class="card container mt-2">
+
+  <div class="d-flex">
+    <img class="auction-image" src="{{auction.image}}" alt="Auction image">
+
+    <div class="auction-card-content d-flex justify-content-between ml-3 p-2">
+      <div class="d-flex flex-column justify-content-center">
+        <div>
+          <h3>{{auction.title}}</h3>
+          <p>{{auction.description}}</p>
+        </div>
+
+        {% if can_bid %}
+        {% crispy bid_form %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="invalid-feedback" style="display: block;">
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endif %}
+      {% if is_winner %}
+      <p>You won this auction with a bid of {{auction.highest_bid_value}}</p>
+      {% endif %}
     </div>
-  </div>
 
-  <div class="row d-flex justify-content-center">
-    <div class="col-auto">
-      <p>{{auction.title}} - {{auction.description}} - {{auction.highest_bid_value}} </p>
-    </div>
-  </div>
-
-
-  <div class="row">
-    <div class="col-6">
+    <div class="d-flex flex-column justify-content-center align-items-center">
+      {% if user.is_authenticated %}
       <form action="{{ form_action }}" method="POST">
         {% csrf_token %}
-
         {% if is_in_watchlist %}
         <input type="submit" value="Remove from watchlist">
         {% else %}
         <input type="submit" value="Add to watchlist">
         {% endif %}
       </form>
-    </div>
-    <div class="col-6">
+      {% endif %}
+
       {% if can_close_auction %}
-      <form action="{% url 'close_auction' auction.id %}" method="POST">
+      <form action="{% url 'close_auction' auction.id %}" method="POST" class="mt-1">
         {% csrf_token %}
         <input type="submit" value="Close auction">
       </form>
       {% endif %}
+      <a class="btn btn-primary mt-1" href="{% url 'edit_auction' auction.id %}">Edit</a>
     </div>
   </div>
-
-  <div class="row">
-    <div class="col">
-      {% crispy bid_form %}
-    </div>
-  </div>
-  <a href="{% url 'edit_auction' auction.id %}">Edit</a>
-
-  {% if is_winner %}
-  <p>You won this auction</p>
-  {% endif %}
+</div>
 </div>
 
 <div class="card container mt-4 p-2">
   {% for comment in comments %}
-  <div class="row">
-    <div class="col">
-      <p>{{comment.author}}: {{comment.content}}</p>
+  <div class="media mr-2 p-2 mt-1 bg-light">
+    <div class="media-body">
+      <h5 class="mt-0">{{comment.author}}</h5>
+      {{comment.content}}
+    </div>
+  </div>
+  {% empty %}
+  <div class="row mt-1 p-2 d-flex">
+    <div class="col text-center">
+      <h3>No comments</h3>
     </div>
   </div>
   {% endfor %}
 
-  <div class="row">
+  <div class="row mt-3">
     <div class="col">
       {% crispy comment_form %}
     </div>
